@@ -3,23 +3,24 @@ CREATE DATABASE ONLINESHOPPINGSYSTEM;
 USE ONLINESHOPPINGSYSTEM;
 
 CREATE TABLE parts(
-	pno		integer(5) 		not null,
+	pno			integer(5) 		not null,
 	pname		varchar(30),
-	qoh		integer,
+	qoh			integer,
 	price		decimal(6,2),
 	olevel		integer,
 	primary key (pno));
     
 CREATE TABLE customers (
-	cno 		integer(10) 		not null 	AUTO_INCREMENT,
+	cno 		integer(10) 	not null 	AUTO_INCREMENT,
 	cname		varchar(30),
 	street		varchar(50),
 	city		varchar(30),
 	state		varchar(30),
-	zip		integer(5),
+	zip			integer(5),
 	phone		char(12),
-	email		varchar(50),
-	password	varchar(15),
+	email		varchar(50)		not null,
+	password	varchar(15),	
+    UNIQUE(email),
 	primary key (cno));
 ALTER TABLE customers AUTO_INCREMENT = 100;
 
