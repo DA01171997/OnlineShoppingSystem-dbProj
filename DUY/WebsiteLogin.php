@@ -1,3 +1,4 @@
+<?php include('server.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,9 +6,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
   <style>
 .jumbotron{
     background-color:powderblue;
@@ -24,23 +22,24 @@ a {
  <div class="jumbotron">
   <h1 align="center">Online Shopping System</h1>
   <h2>Login</h2>
-  <form action="/Register.php">
-    <div class="form-group">
-      <label for="Customer Number">Customer Number:</label>
-      <input type="number" class="form-control" id="number" placeholder="Customer Number" name="cnumber">
+  <form method="post" action="/OnlineShoppingSystem/WebsiteLogin.php">
+  <?php include('errors.php'); ?>
+  <div class="form-group">
+      <label for="Email">Email:</label>
+      <input type="email" class="form-control" id="email" placeholder="Email" name="email">
     </div>
     <div class="form-group">
-      <label for="pwd">Password:</label>
-      <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd">
+      <label for="pwd1">Password:</label>
+      <input type="password" class="form-control" id="pwd1" placeholder="Enter Password" name="pswd1">
     </div>
     <div class="form-group form-check">
       <label class="form-check-label">
         <input class="form-check-input" type="checkbox" name="remember"> Remember me
       </label>
     </div>
-    <button type="submit" class="btn btn-light">Login</button>
+    <button type="submit" class="btn btn-light" name="login_user">Login</button>
   </form>
-    Not a member? <a href ="login"> Sign Up</a>
+    Not a member? <a href ="/OnlineShoppingSystem/Register.php"> Sign Up</a>
   </div>
 </div>
 

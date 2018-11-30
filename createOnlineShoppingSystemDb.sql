@@ -17,7 +17,7 @@ CREATE TABLE customers (
 	city		varchar(30),
 	state		varchar(30),
 	zip			integer(5),
-	phone		char(12),
+	phone		varchar(12),
 	email		varchar(50)		not null,
 	password	varchar(15),	
     UNIQUE(email),
