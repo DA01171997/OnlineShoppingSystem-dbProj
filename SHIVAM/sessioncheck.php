@@ -1,6 +1,6 @@
 <?php
 
-include('config.php'); // includes the config of php
+require 'config.php'; // includes the config of php
 session_start(); // start the session
 
 $check_user = $_SESSION['login_user']; // this logins the user
