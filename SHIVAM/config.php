@@ -4,7 +4,8 @@
 </head>
 <body>
 <?php
-$conn = new mysqli("localhost","root","","ONLINESHOPPINGSYSTEM");
+session_start();
+ $conn = mysqli_connect("localhost","root","","ONLINESHOPPINGSYSTEM");
 if($conn->connect_error){
     //echo $password;
     die("Connection failed: " . $conn->connect_error);
