@@ -11,22 +11,31 @@
    
     //require "config.php";
     $errors = array();
-    if($_SERVER["REQUEST_METHOD"] == "POST"){
+    if(isset($_POST['login_user'])){
 
         $email =$conn->real_escape_string($_POST['email']); // gets the email from the database
         $password = $conn->real_escape_string($_POST['password']); // gets the password from the database
 
-        $sql = "SELECT email, password FROM customers WHERE email = '$email' and password = '$password'"; // this checks to see if a person actually exists in the database
+        $sql = "SELECT *  FROM customers WHERE email = '$email'"; // this checks to see if a person actually exists in the database
         $result = mysqli_query($conn,$sql); // this is the result of the sql
-        $row = mysqli_fetch_array($result,MYSQLI_ASSOC); // this is getting the row for it
+ 
        // $active = $row['active'];
-
+      //  $queryemail=$assoarray['email'];
+       // $querypswd1=$assoarray['password'];
         $count = mysqli_num_rows($result); // gets the number of rows
 
-        if($count == 1){ // there should only be one result or something is wrong
-            session_register("email");
-            $_SESSION['login_user'] = $email;
-            header("Location: welcome.php");
+        if($count >0){ // there should only be one result or something is wrong
+            //session_register("email");
+            $row = $result->fetch_assoc();
+            if($row['password'] == $password)
+            { // this is getting the row for it
+                $_SESSION['email'] = $email;
+                $_SESSION['success'] = "Logged in successfully";
+                header("Location: index.php");
+            } 
+            else {
+                //array_push($errors,"incorrect password");
+            } 
         }
         else{
             array_push($errors,"Your Login Name or Password is incorrect");
@@ -70,7 +79,7 @@
             <label for="password">Email:</label>
             <input type="password" class="form-control" id="password" placeholder="password" name="password">
         </div>
-            <input type = "submit" value = " Submit "/><br /> 
+            <input type = "submit" value = " Submit " name = "login_user"/><br /> 
             
         </form> 
          Click <a href = "register.php">here</a> if you are a new user 

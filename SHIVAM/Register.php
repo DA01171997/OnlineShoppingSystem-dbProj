@@ -56,37 +56,65 @@
             array_push($errors, "Name is required");
             //echo "Name is required";
         }
-        if(empty($email)){
-            array_push($errors, "Email is required");
-        }
-        if(empty($psd1)) {
-            array_push($errors, "Password is required");
-        }
-        if(empty($psd2)) {
-            array_push($errors, "Confirm is required");
-        }
+        else{
+            if(empty($email)){
+                array_push($errors, "Email is required");
+            }
+            else {
+                if(empty($email)){
+                    array_push($errors, "Email is required");
+                }
+                else {
+                    if(empty($psd1)) {
+                        array_push($errors, "Password is required");
+                    }
+                    else {
+                        if(empty($psd2)) {
+                            array_push($errors, "Confirm is required");
+                        }
+                        else {
+                            if($psd1 != $psd2) {
+                                array_push($errors, "Passwords not match");
+                            }
+                            else
+                            {
+                                $sql = "SELECT * FROM customers WHERE email = '$email'";
+                                $result = mysqli_query($conn,$sql); // this is the result of the sql
+                                $row = mysqli_fetch_array($result,MYSQLI_ASSOC); // this is getting the row for it
+                                // $active = $row['active'];
+                                $count = mysqli_num_rows($result); // gets the number of rows
+                                if($count > 0) {
+                                    array_push($errors, "Duplicate Email");
+                                }
+                                else{
+                                    $insert = "INSERT INTO customers (`cname`,`street`,`city`,`state`,`zip`,`phone`,`email`,`password`) 
+                                    VALUES ('$name', '$street', '$city', '$state', $zip, $phone, '$email', '$psd1')";   
+                                    $result=mysqli_query($conn, $insert);
+                                    $_SESSION['email'] = $email;
 
-        if($psd1 != $psd2) {
-            array_push($errors, "Passwords not match");
-        }
+                                    $_SESSION['success'] = "Logged in successfully";
+                                    header('location: index.php');
+                                }
+                            }
+                        }
 
-        $sql = "SELECT * FROM customers WHERE email = '$email'";
-        $result = mysqli_query($conn,$sql); // this is the result of the sql
-        $row = mysqli_fetch_array($result,MYSQLI_ASSOC); // this is getting the row for it
-        // $active = $row['active'];
-        $count = mysqli_num_rows($result); // gets the number of rows
-        if($count > 0) {
-            array_push($errors, "Duplicate Email");
+                    }
+                    
+
+                }
+
+            }
         }
+       
+        
+
+       
+
+        
 
 
         if(count($errors) == 0) {
-            $insert = "INSERT INTO customers (`cname`,`street`,`city`,`state`,`zip`,`phone`,`email`,`password`) 
-                    VALUES ('$name', '$street', '$city', '$state', $zip, $phone, '$email', '$pswd1')";   
-            $result=mysqli_query($conn, $insert);
-            $_SESSION['email'] = $email;
-            $_SESSION['success'] = "Logged in successfully";
-            header('location: welcome.php');
+           
         }
     }
 
