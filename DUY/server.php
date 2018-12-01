@@ -85,6 +85,7 @@ if (isset($_POST['register'])){
                         VALUES ('$name', '$street', '$city', '$state', $zip, $phone, '$email', '$pswd1')";
         $result=mysqli_query($dbconnection, $insert_query);
         $_SESSION['email'] = $email;
+        $_SESSION['$name'] = $name;
         $_SESSION['success'] = "Logged in successfully";
         header('location: /OnlineShoppingSystem/index.php');
     }
@@ -104,13 +105,15 @@ if (isset($_POST['login_user'])){
         array_push($errors, "Password is required");
     }
     if (count($errors)==0){
-        $login_query= "SELECT * FROM customers WHERE email='$email' AND password='$pswd1'";
+        $login_query= "SELECT cname, email, password FROM customers WHERE email='$email' AND password='$pswd1'";
         $result=mysqli_query($dbconnection, $login_query);
         $assoarray = mysqli_fetch_assoc($result);
         $queryemail=$assoarray['email'];
+        $queryname=$assoarray['cname'];
         $querypswd1=$assoarray['password'];
         if (mysqli_num_rows($result) == 1) {
             $_SESSION['email'] = $email;
+            $_SESSION['name'] = $queryname;
             $_SESSION['success'] = "Logged in successfully";
             header('location: /OnlineShoppingSystem/index.php');
         }
@@ -118,6 +121,10 @@ if (isset($_POST['login_user'])){
             array_push($errors, "Wrong Email and Password combination");
         }
     }
+}
+
+if (isset($_POST['Search'])){
+    echo "yes";
 }
     mysqli_close($dbconnection);
 ?>
