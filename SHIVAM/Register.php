@@ -136,7 +136,7 @@
                 color:orange;
             }
             a {
-                color: orange;
+                color: white;
             }
         </style>
     </head>

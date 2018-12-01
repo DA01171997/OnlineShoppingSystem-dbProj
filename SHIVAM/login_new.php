@@ -35,6 +35,7 @@
             } 
             else {
                 //array_push($errors,"incorrect password");
+                array_push($errors,"Your Login Name or Password is incorrect");
             } 
         }
         else{
@@ -58,7 +59,7 @@
             color:orange;
         }
         a{
-            color:orange;
+            color:white;
         }
     </style>
 </head>
