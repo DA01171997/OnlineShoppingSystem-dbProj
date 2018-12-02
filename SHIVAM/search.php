@@ -50,6 +50,7 @@ html,body {
         </div>
 
         <div class ="col-10 col-sm-10 col-md-10 col-lg-8 col-xl-8"  id = "column1">
+        <form action = "cart.php" method = "post">
             <?php
                 $errors = array();
                 include 'errors.php';
@@ -81,17 +82,26 @@ html,body {
                             //echo "<th>Quantity</th>";
                             echo "<th><input type = \"text\" value = '".$row['qoh']."' style = \"width: 30px\"</th>";
                             echo "</tr>";
-                        }// this is the result of the sql
+                        $sql2 = "INSERT into cart (`qty`) VALUES(".$row['qoh'].")";
+                            // this is the result of the sql
                         // so we are getting the result here from there what we are going 
                         //to do is put it in a table using echo table tr etc and then from
                         //there are are going to get the input for the quantity and add that to the cart
                         //https://stackoverflow.com/questions/5678567/how-to-pass-variables-between-php-scripts
                         //https://www.youtube.com/watch?v=owZqCGIWFmY
+
+
+                        // now we want to insert into the database and add the button 
+                        }
+
+                        
+                        
                     }
-                }
-                
+                } 
                 
             ?>
+            <input type = "submit" value = " Submit " name = "cart"/><br /> 
+        </form>
         </div>
         
     </div>
