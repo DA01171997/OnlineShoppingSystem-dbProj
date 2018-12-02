@@ -28,8 +28,6 @@ html,body {
 <div class="container-fluid h-100">
     <div class="jumbotron">
         <h1 align="center">WELCOME</h1>
-        
-
     </div>
 
     <div class = "row justify-content-center h-100">
