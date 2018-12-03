@@ -113,8 +113,16 @@ html,body {
                                         array_push($errors, "Passwords not match");
                                     }
                                     else{
-                                        $sql = "UPDATE customers Set name = $name, street = $street, city = $city, state = $state, zip = $zip, psd1 = $psd1, psd2 = $psd2 where email = $email";
-                                        query($sql);
+                                        $sql = "UPDATE customers Set cname = '$name', street = '$street', city = '$city', state = '$state', zip = '$zip', password = '$psd1' where email = '$email'";
+                                        //query($sql);
+                                        if($conn->query($sql) === TRUE)
+                                        {
+                                            echo "SUCCESS";
+                                        }
+                                        else
+                                        {
+                                            echo $conn->error;
+                                        }
                                     }
                             }
                         }
