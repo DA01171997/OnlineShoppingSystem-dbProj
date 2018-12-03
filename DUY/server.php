@@ -242,5 +242,13 @@ if (isset($_POST['update'])){
         echo"<script>location.href='/OnlineShoppingSystem/updateuser.php'</script>";
     }
 }
+//if search
+if(isset($_POST['search'])){
+    $_SESSION['search']=$_POST['search'];
+    if(isset($_POST['inputarray'])){
+        $_SESSION['movieQty'] = $_POST['inputarray'];
+    }
+   echo"<script>location.href='/OnlineShoppingSystem/search.php'</script>";
+}
 mysqli_close($dbconnection);
 ?>

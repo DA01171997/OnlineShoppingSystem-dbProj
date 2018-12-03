@@ -64,7 +64,7 @@ if(isset($_SESSION['success'])) {
     </div>
 <?php
 $dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname); 
-$parts_query= "SELECT pno, pname, qoh, price, olevel FROM parts";
+$parts_query= "SELECT cartno, cno, pno, qty FROM cart WHERE cno='$cno'";
 $result=mysqli_query($dbconnection, $parts_query);
 if (!$result) {
     die("Database query failed.");
@@ -84,10 +84,9 @@ mysqli_close($dbconnection);
  <table class="table table-bordered">
   <thead>
     <tr>
-      <th scope="col">Movie # </th>
-      <th scope="col">Movie Name</th>
-      <th scope="col">$Price</th>
-      <th scope="col">Available QTY</th>
+      <th scope="col">Cart # </th>
+      <th scope="col">Customer #</th>
+      <th scope="col">P number</th>
       <th scope="col">QTY</th>
     </tr>
   </thead>

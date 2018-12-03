@@ -39,7 +39,7 @@ if(isset($_SESSION['success'])) {
          echo "<a class='p-2' href='/OnlineShoppingSystem/updateuser.php'>$name</a>";
         ?>
       </nav>
-      <form method ="post" class ="form-control" id="search" action="/OnlineShoppingSystem/index.php"style ="
+      <form method ="post" class ="form-control" id="search" action="/OnlineShoppingSystem/search.php"style ="
             width: 275px;
             height: 40px;
             padding: 0px;
@@ -48,10 +48,10 @@ if(isset($_SESSION['success'])) {
             border-radius: 5px;">
             <input class="form-group" type="text" placeholder="search" name="search" formmethod="post" >
             <?php //<a class="btn btn-outline-primary mt-md-0 " href="/OnlineShoppingSystem/logout.php" name="logout">Logout</a> ?>
-            <button class="btn btn-outline-success" form="search" type="submit" formaction="/OnlineShoppingSystem/index.php">Search</button>     
+            <button class="btn btn-outline-success" form="search" type="submit" formaction="/OnlineShoppingSystem/search.php">Search</button>     
      </form>
         
-     <form method ="post" class ="form-control" id="logout" action="/OnlineShoppingSystem/index.php"style ="
+     <form method ="post" class ="form-control" id="logout" action="/OnlineShoppingSystem/search.php"style ="
             width: 75px;
             height: 40px;
             padding: 0px;
@@ -63,8 +63,10 @@ if(isset($_SESSION['success'])) {
        
     </div>
 <?php
-$dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname); 
-$parts_query= "SELECT pno, pname, qoh, price, olevel FROM parts";
+if(isset($_SESSION['search'])){
+$searchpname = strtolower($_SESSION['search']);
+$dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+$parts_query= "SELECT pno, pname, qoh, price, olevel FROM parts where lower(pname) like '%$searchpname%'"; 
 $result=mysqli_query($dbconnection, $parts_query);
 if (!$result) {
     die("Database query failed.");
@@ -80,7 +82,7 @@ mysqli_close($dbconnection);
  <p>Here are our movies</p></h1>"; 
  ?>
 
-<?php echo "<form method ='post' id='cart' action='/OnlineShoppingSystem/index.php' style=' width: 90%; border: 1px solid #B0C4DE; border-radius: 0px 0px 10px 10px; background: #f5f5f5; margin: 0px auto; padding: 20px;'>";?>
+<?php echo "<form method ='post' id='cart' action='/OnlineShoppingSystem/search.php' style=' width: 90%; border: 1px solid #B0C4DE; border-radius: 0px 0px 10px 10px; background: #f5f5f5; margin: 0px auto; padding: 20px;'>";?>
  <table class="table table-bordered">
   <thead>
     <tr>
@@ -94,7 +96,7 @@ mysqli_close($dbconnection);
   <tbody>
   <?php
     $i=0;
-    $arrayIndex=array();
+    
     while ($i < $num) {
     $assoarray = mysqli_fetch_assoc($result);
     $movieNum = $assoarray["pno"];
@@ -133,6 +135,7 @@ mysqli_close($dbconnection);
 </body>
 </html>
 <?php
+}
 $inputarray = array();
 if(isset($_POST['inputarray'])){
     $inputarray = $_POST['inputarray'];    
