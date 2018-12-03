@@ -1,11 +1,15 @@
-<?php 
-session_start();
+<?php include('server.php');
 if (isset($_POST['logout_user'])){
     $_SESSION=array();
     $_POST = array();
     session_destroy();
+    
 }
+$name="User";
 if(isset($_SESSION['success'])) {
+    if(isset($_SESSION['cname'])){
+      $name=$_SESSION['cname'];
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +28,7 @@ if(isset($_SESSION['success'])) {
 <div class="container">
  <div class="jumbotron">
   <form method="post" action="/OnlineShoppingSystem/logout.php">
-   <h2 align="center"> Logout Duy A Do?</h2>
+   <?php echo "<h2 align='center'> Logout $name?</h2>"; ?>
   <button type="submit" class="btn btn-outline-warning btn-lg btn-block" name="logout_user">Logout</button>
     <?php // &nbsp = spaces ?>
   </form>

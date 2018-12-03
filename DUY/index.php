@@ -4,10 +4,10 @@ if (isset($_POST['logout_user'])){
     $_POST = array();
     session_destroy();
 }
-$name="";
+$name="User";
 if(isset($_SESSION['success'])) {
-    if(isset($_SESSION['name'])){
-        $name=$_SESSION['name'];
+    if(isset($_SESSION['cname'])){
+        $name=$_SESSION['cname'];
     }
 ?>
 
@@ -26,24 +26,35 @@ if(isset($_SESSION['success'])) {
 <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
     <a class="my-0 mr-md-auto font-weight-normal" href="/OnlineShoppingSystem/index.php">Online Shopping System<a>
     <nav class="my-2 my-md-0 mr-md-3">
-        <a class="p-2 " href="#">Features</a>
-        <a class="p-2 " href="#">Enterprise</a>
-        <a class="p-2 " href="#">Support</a>
+        <a class="p-2 " href="#">Features</a> 
+        <a class="p-2 " href="#">Enterprise</a> 
+        <a class="p-2 " href="#">Support</a> 
         <?php
-         echo "<a class='p-2' href='#'>$name</a>";
+         echo "<a class='p-2' href='/OnlineShoppingSystem/updateuser.php'>$name</a>";
         ?>
       </nav>
-      <form method ="post" class ="form-control" action="/OnlineShoppingSystem/index.php"style ="
-            width: 280px;
-            height: 50px;
+      <form method ="post" class ="form-control" id="search" action="/OnlineShoppingSystem/index.php"style ="
+            width: 275px;
+            height: 40px;
             padding: 0px;
             border: 0px;
             background: white;
             border-radius: 5px;">
-            <input class="form-group" type="text" id ="form1" placeholder="Search" name="Search" formmethod="post" >
-            <button class="btn btn-outline-success" id ="form1" type="submit" formaction="/OnlineShoppingSystem/index.php">Search</button>
+            <input class="form-group" type="text" placeholder="search" name="search" formmethod="post" >
+            <?php //<a class="btn btn-outline-primary mt-md-0 " href="/OnlineShoppingSystem/logout.php" name="logout">Logout</a> ?>
+            <button class="btn btn-outline-success" form="search" type="submit" formaction="/OnlineShoppingSystem/index.php">Search</button>     
      </form>
-      <a class="btn btn-outline-primary mt-md-0 " href="/OnlineShoppingSystem/logout.php">Logout</a>
+        
+     <form method ="post" class ="form-control" id="logout" action="/OnlineShoppingSystem/index.php"style ="
+            width: 75px;
+            height: 40px;
+            padding: 0px;
+            border: 0px;
+            background: white;
+            border-radius: 5px;">
+            <input class="btn btn-outline-primary mt-md-0 "  form="logout" type="submit" value="logout" id ="form2" name = "logout">
+       </form>
+       
     </div>
 <div class="container">
  <div class="jumbotron">
@@ -60,10 +71,5 @@ if(isset($_SESSION['success'])) {
 }
 else {
 echo"<script>location.href='/OnlineShoppingSystem/WebsiteLogin.php'</script>";
-if (isset($_POST['Search'])){
-echo "yes";
-}
-    echo "no";
-
 }
 ?>
