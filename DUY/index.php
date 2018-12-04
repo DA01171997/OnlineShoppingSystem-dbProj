@@ -32,8 +32,8 @@ if(isset($_SESSION['success'])) {
     <a class="my-0 mr-md-auto font-weight-normal" href="/OnlineShoppingSystem/index.php">Online Shopping System<a>
     <nav class="my-2 my-md-0 mr-md-3">
         <a class="p-2 " href="/OnlineShoppingSystem/index.php">Features</a> 
-        <a class="p-2 " href="#">Check Order Status</a> 
-        <a class="p-2 " href="#">Check Out</a> 
+        <a class="p-2 " href="/OnlineShoppingSystem/checkorder.php">Check Order Status</a> 
+        <a class="p-2 " href="/OnlineShoppingSystem/viewcart.php">Check Out</a> 
         <a class="p-2 " href="/OnlineShoppingSystem/viewcart.php"">View/Edit Cart</a> 
         <?php
          echo "<a class='p-2' href='/OnlineShoppingSystem/updateuser.php'>$name</a>";
@@ -85,10 +85,10 @@ mysqli_close($dbconnection);
  <table class="table table-bordered">
   <thead>
     <tr>
-      <th scope="col">Movie # </th>
+      <th scope="col">Movie#</th>
       <th scope="col">Movie Name</th>
       <th scope="col">$Price</th>
-      <th scope="col">Available QTY</th>
+      <th scope="col">AQTY</th>
       <th scope="col">QTY</th>
     </tr>
   </thead>

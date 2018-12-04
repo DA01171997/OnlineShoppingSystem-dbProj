@@ -186,15 +186,6 @@ if (isset($_POST['update'])){
     if($updatepswd1!=$updatepswd2){
         array_push($errors, "Update passwords do not match");
     }
-    print($updatename);
-    print($updatestreet);
-    print($updatecity);
-    print($updatestate);
-    print($updatezip);
-    print($updatephone);
-    print($email);
-    print($updatepswd1);
-    print($updatepswd2);
     if (count($errors)==0){
         if($_SESSION['cname']!=$updatename){
             $update_name= "UPDATE customers SET cname='$updatename' WHERE cno='$cno' AND email='$email'";
@@ -248,16 +239,30 @@ if(isset($_POST['search'])){
     if(isset($_POST['inputarray'])){
         $_SESSION['movieQty'] = $_POST['inputarray'];
     }
-   echo"<script>location.href='/OnlineShoppingSystem/search.php'</script>";
+    if (count($errors)==0){
+        echo"<script>location.href='/OnlineShoppingSystem/search.php'</script>";
+    }     
 }
 
 if (isset($_POST['cart'])){
     $_SESSION['cart']=$_POST['cart'];
     print("isset");
-   echo"<script>location.href='/OnlineShoppingSystem/viewcart.php'</script>";  
+    if (count($errors)==0){
+        echo"<script>location.href='/OnlineShoppingSystem/viewcart.php'</script>"; 
+    }     
 }
 if (isset($_POST['modifycart'])){
-    print(" modify isset");
+    if (count($errors)==0){
+        echo"<script>location.href='/OnlineShoppingSystem/viewcart.php'</script>";
+    }     
+}
+if(isset($_POST['checkout'])){
+    if (count($errors)==0){
+        echo"<script>location.href='/OnlineShoppingSystem/viewcart.php'</script>";
+    }     
+}
+if(isset($_POST['logout_checkout'])){
+    echo"<script>location.href='/OnlineShoppingSystem/viewcart.php'</script>";
 }
 mysqli_close($dbconnection);
 ?>

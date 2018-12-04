@@ -6,7 +6,7 @@ if (isset($_POST['logout_user'])){
 }
 $name="User";
 $cno="cno";
-$arrayIndex=array();
+$modifyarrayIndex=array();
 if(isset($_SESSION['success'])) {
     if(isset($_SESSION['cname'])){
         $name=$_SESSION['cname'];
@@ -15,7 +15,6 @@ if(isset($_SESSION['success'])) {
         $cno=$_SESSION['cno'];
     }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,107 +61,73 @@ if(isset($_SESSION['success'])) {
        </form>
        
     </div>
+
 <?php
-if(isset($_SESSION['search'])){
-$searchpname = strtolower($_SESSION['search']);
+
 $dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
-$parts_query= "SELECT pno, pname, qoh, price, olevel FROM parts where lower(pname) like '%$searchpname%'"; 
+$parts_query= "SELECT o.ono, o.received, o.recievedtime, o.shipped FROM orders as o, odetails as od WHERE o.ono = od.ono AND o.cno='$cno'";
 $result=mysqli_query($dbconnection, $parts_query);
-if (!$result) {
-    die("Database query failed.");
- }
-$num=mysqli_num_rows($result);  
-mysqli_close($dbconnection);  
+$num=mysqli_num_rows($result);   
 ?>
-
 <div class="container">
- <div class="jumbotron" background= "#f5f5f5">
- <?php 
+<?php 
  echo "<h1 align='center'>Welcome $name
- <p>Here are our movies</p></h1>"; 
- ?>
+ <p>Here Orders</p></h1>";
+ ?> 
+ <div class="jumbotron" style="
+    margin: 0px auto;
+    padding: 20px;
+    border: 1px solid #B0C4DE;
+    background: #f5f5f5;
+    border-radius: 0px 0px 10px 10px;">
 
-<?php echo "<form method ='post' id='cart' action='/OnlineShoppingSystem/search.php' style=' width: 90%; border: 1px solid #B0C4DE; border-radius: 0px 0px 10px 10px; background: #f5f5f5; margin: 0px auto; padding: 20px;'>";?>
+ 
  <table class="table table-bordered">
-  <thead>
-    <tr>
-    <th scope="col">Movie#</th>
-      <th scope="col">Movie Name</th>
-      <th scope="col">$Price</th>
-      <th scope="col">AQTY</th>
-      <th scope="col">QTY</th>
-    </tr>
-  </thead>
-  <tbody>
-  <?php
+ <thead>
+   <tr>
+     <th scope="col">Order#</th>
+     <th scope="col">ReceivedDate</th>
+     <th scope="col">ReceivedDate</th>
+     <th scope="col">ShippedDate</th>
+   </tr>
+ </thead>
+ <tbody>
+ <?php
     $i=0;
-    
     while ($i < $num) {
     $assoarray = mysqli_fetch_assoc($result);
-    $movieNum = $assoarray["pno"];
-    $movieName = $assoarray["pname"];
-    $moviePrice = $assoarray["price"];
-    $movieAvailQty = $assoarray["qoh"];
-    $movieWantQty   = $assoarray["olevel"];
-    $arrayIndex[$i] = $movieNum;
-    $inputarray[$movieNum]=0;
+    $ono = $assoarray["ono"];
+    $recvDate = $assoarray["received"];
+    $recvTime = $assoarray["recievedtime"];
+    if (empty($assoarray["shipped"])){
+        $shipDate = "Unknown";
+    }
+    else {
+        $shipDate = $assoarray["shipped"];
+    }
     ?>
-    <?php echo "<tr>"; ?>
     
-    <?php echo  "<th scope='row'>$movieNum</th>"; ?>
-     <?php echo  "<td>$movieName</td>"; ?>
-     <?php echo  "<td>$moviePrice</td>"; ?>
-     <?php echo  "<td>$movieAvailQty</td>"; ?>
-     <?php echo "<td>"; ?>
+    <?php echo "<tr>"; ?>   
 
-     <?php echo "<div class='form-group' style='width:40%;'>"; ?>    
-     <?php echo "<input type='number' class='form-control'  form='cart' placeholder='0' name='inputarray[$movieNum]'>"; ?>
-     
-     <?php echo "</div>"; ?>
-
-     <?php echo "</td>"; ?>  
-     <?php echo "</tr> "; ?>
-     <?php
+    <td>
+    <?php echo "<a class='text' href='/OnlineShoppingSystem/checkorderStatus.php/?ono=$ono'>$ono<a>"; ?>   
+    </td>
+     <?php echo  "<td>$recvDate</td>"; ?>
+     <?php echo  "<td>$recvTime</td>"; ?>
+     <?php echo  "<td>$shipDate</td>";?>
+    <?php echo "</tr> ";?>
+    <?php
     $i++;    
     }
     ?>
-  </tbody>
-</table>
-<?php echo "<button type='submit' form='cart' name='cart' class='btn btn-xs btn-outline-primary '>AddCart</button>";?>
-<?php echo "</form>"; ?>
+ </tbody>
+ </table>
   </div>
 </div>
 </body>
 </html>
 <?php
-}
-$inputarray = array();
-if(isset($_POST['inputarray'])){
-    $inputarray = $_POST['inputarray'];    
-    $_SESSION['movieQty'] = $_POST['inputarray'];
-    $_SESSION['movieIndex'] = $arrayIndex;
-    $dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
-    for($counter = 0; $counter < sizeof($arrayIndex); $counter++)
-	{
-        $index = $arrayIndex[$counter];
-        $qty= $inputarray[$arrayIndex[$counter]];
-        $parts_query= "SELECT qoh from parts where pno=$index"; 
-        $result=mysqli_query($dbconnection, $parts_query);
-        $movieAvailQty = $assoarray["qoh"];
-        if (($movieAvailQty - $qty) <0){
-            array_push($errors, "Not Enough Available QTY for movie# $index");
-        }
-        if($qty<0){
-            array_push($errors, "Cannot have negative QtY for movie# $index");
-        }
-        if (count($errors)==0 && $qty>0){
-            $parts_query= "INSERT INTO cart (cno, pno, qty) VALUES ('$cno','$index','$qty')"; 
-            $result=mysqli_query($dbconnection, $parts_query);
-        }
-    }
-    mysqli_close($dbconnection);
-    //var_dump($_SESSION['movieQty']);
-}
+
 }
 else {
 echo"<script>location.href='/OnlineShoppingSystem/WebsiteLogin.php'</script>";

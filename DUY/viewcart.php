@@ -32,8 +32,8 @@ if(isset($_SESSION['success'])) {
     <a class="my-0 mr-md-auto font-weight-normal" href="/OnlineShoppingSystem/index.php">Online Shopping System<a>
     <nav class="my-2 my-md-0 mr-md-3">
         <a class="p-2 " href="/OnlineShoppingSystem/index.php">Features</a> 
-        <a class="p-2 " href="#">Check Order Status</a> 
-        <a class="p-2 " href="#">Check Out</a> 
+        <a class="p-2 " href="/OnlineShoppingSystem/checkorder.php">Check Order Status</a> 
+        <a class="p-2 " href="/OnlineShoppingSystem/viewcart.php">Check Out</a> 
         <a class="p-2 " href="/OnlineShoppingSystem/viewcart.php">View/Edit Cart</a> 
         <?php
          echo "<a class='p-2' href='/OnlineShoppingSystem/updateuser.php'>$name</a>";
@@ -63,9 +63,9 @@ if(isset($_SESSION['success'])) {
        
     </div>
 <?php
-if(isset($_SESSION['cart'])){
+if(isset($_SESSION['cart'])||isset($_SESSION['success'])){
 $dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
-$parts_query= "SELECT c.cartno, c.cno, c.pno, c.qty , p.pname, p.price FROM parts as p, cart as c WHERE cno='$cno' and c.pno = p.pno";
+$parts_query= "SELECT c.cartno, c.cno, c.pno, c.qty , p.pname, p.price, p.qoh FROM parts as p, cart as c WHERE cno='$cno' and c.pno = p.pno";
 $result=mysqli_query($dbconnection, $parts_query);
 if (!$result) {
     die("Database query failed.");
@@ -77,7 +77,7 @@ $num=mysqli_num_rows($result);
  <div class="jumbotron" background= "#f5f5f5">
  <?php 
  echo "<h1 align='center'>Welcome $name
- <p>Here are movies in your cart</p></h1>"; 
+ <p>Here Are Movies In Your Cart</p></h1>"; 
  ?>
 
 <?php echo "<form method ='post' id='modifycart' action='/OnlineShoppingSystem/viewcart.php' style=' width: 100%; border: 1px solid #B0C4DE; border-radius: 0px 0px 10px 10px; background: #f5f5f5; margin: 0px auto; padding: 20px;'>";?>
@@ -89,6 +89,7 @@ $num=mysqli_num_rows($result);
       <th scope="col">Movie# </th>
       <th scope="col">Movie Name </th>
       <th scope="col">$Price</th>
+      <th scope="col">A.QTY</th>
       <th scope="col">QTY</th>
       <th scope="col">$Total</th>
     </tr>
@@ -104,7 +105,8 @@ $num=mysqli_num_rows($result);
     $moviePrice = $assoarray["price"];
     $movieQty = $assoarray["qty"];
     $cartnum   = $assoarray["cartno"];
-    $modifyarrayIndex[$i] = $movieNum;
+    $movieAvailQty = $assoarray["qoh"];
+    $modifyarrayIndex[$i] = $cartnum;
     $totalcurrent=0;
     $totalcurrent=($moviePrice*$movieQty);
     $totalprice+=$totalcurrent;
@@ -115,10 +117,11 @@ $num=mysqli_num_rows($result);
     <?php echo  "<td>$movieNum</td>"; ?>
      <?php echo  "<td>$movieName</td>"; ?>
      <?php echo  "<td>$moviePrice</td>"; ?>
+     <?php echo  "<td>$movieAvailQty</td>";?>
      <?php echo "<td>"; ?>
 
-     <?php echo "<div class='form-group' style='width:40%;'>"; ?>    
-     <?php echo "<input type='number' class='form-control'  form='modifycart' placeholder='$movieQty' name='modifyinputarray[$movieNum]'>"; ?>
+     <?php echo "<div class='form-group' style='width:50%;'>"; ?>    
+     <?php echo "<input type='number' class='form-control'  form='modifycart' placeholder='$movieQty' name='modifyinputarray[$cartnum]'>"; ?>
      
      <?php echo "</div>"; ?>
      <?php echo "</td>"; ?> 
@@ -129,12 +132,13 @@ $num=mysqli_num_rows($result);
     }
     ?>
     <tr>
-      <td colspan="5"> </td>
+      <td colspan="6"> </td>
       <?php echo  "<td colspan='1'>$totalprice</td>"; ?> 
     </tr>
   </tbody>
 </table>
 <?php echo "<button type='submit' form='modifycart' name='modifycart' class='btn btn-xs btn-outline-primary '>Modify Cart</button>";?>
+<?php echo "<button type='submit' form='modifycart' name='checkout' class='btn btn-xs btn-outline-success '>Checkout</button>";?>
 <?php echo "</form>"; ?>
   </div>
 </div>
@@ -144,23 +148,73 @@ $num=mysqli_num_rows($result);
 }
 $modifyinputarray = array();
 if(isset($_POST['modifyinputarray'])){
-    
     $modifyinputarray = $_POST['modifyinputarray'];    
     $_SESSION['modifymovieQty'] = $_POST['modifyinputarray'];
     $_SESSION['modifymovieIndex'] = $modifyarrayIndex;
     $dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
     for($counter = 0; $counter < sizeof($modifyarrayIndex); $counter++)
-	{/*
-        $index = $arrayIndex[$counter];
-        $qty= $modifyinputarray[$arrayIndex[$counter]];
-        $parts_query= "INSERT INTO cart (cno, pno, qty) VALUES ('$cno','$index','$qty')"; 
+	{   
+        $index = $modifyarrayIndex[$counter];
+        $qty= $modifyinputarray[$modifyarrayIndex[$counter]];
+        $parts_query= "SELECT p.qoh FROM cart AS c, parts AS p WHERE c.pno=p.pno AND c.cartno ='$index'"; 
         $result=mysqli_query($dbconnection, $parts_query);
-        */
+        $movieAvailQty = $assoarray["qoh"];
+        if (($movieAvailQty - $qty) <0){
+            array_push($errors, "Not Enough Available QTY for movie# $index");
+        }
+        if($qty<0){
+            array_push($errors, "Cannot have negative QTY for movie# $index");
+        }
+        if (count($errors)==0){
+            if (($qty==0) && (strlen($modifyinputarray[$modifyarrayIndex[$counter]])!=0)){
+                $parts_query= "DELETE FROM cart WHERE cartno='$index'"; 
+                $result=mysqli_query($dbconnection, $parts_query);
+            }
+            if ($qty>0){
+                $parts_query= "UPDATE cart SET qty='$qty' WHERE cartno='$index'"; 
+                $result=mysqli_query($dbconnection, $parts_query);
+            }
+
+        }
     }
     mysqli_close($dbconnection);
-    //
-    
+
     var_dump($_SESSION['modifymovieQty']);
+}
+if(isset($_POST['checkout'])){
+    $dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+    $i=0;
+    $timestamp=date('Y-m-d H:i:s', $_SERVER['REQUEST_TIME']);
+    $splitTimeStamp = explode(" ",$timestamp);
+    $parts_query= "SELECT c.pno, c.qty FROM cart as c WHERE cno='$cno'";
+    $result=mysqli_query($dbconnection, $parts_query);
+    $num=mysqli_num_rows($result);
+    if($num!=0){
+        $date = $splitTimeStamp[0];
+        $time = $splitTimeStamp[1];
+        $parts_query= "INSERT INTO orders (cno, received, recievedtime) VALUES('$cno','$date','$time')";
+        mysqli_query($dbconnection, $parts_query);
+
+        $parts_query= "SELECT ono FROM orders WHERE received ='$date' AND recievedtime='$time'";
+        $result=mysqli_query($dbconnection, $parts_query);
+        $assoarray = mysqli_fetch_assoc($result);
+        $ono=$assoarray["ono"];
+
+        $parts_query= "SELECT c.pno, c.qty FROM cart as c WHERE cno='$cno'";
+        $result=mysqli_query($dbconnection, $parts_query);
+        $num=mysqli_num_rows($result);
+        while ($i < $num) {
+            $assoarray = mysqli_fetch_assoc($result);
+            $movieNum = $assoarray["pno"];
+            $movieQty = $assoarray["qty"];
+            $parts_query= "INSERT INTO odetails (ono, pno, qty) VALUES('$ono','$movieNum','$movieQty')";
+            mysqli_query($dbconnection, $parts_query);
+            $i++;  
+        }
+        $parts_query= "DELETE FROM cart WHERE cno='$cno'";
+        mysqli_query($dbconnection, $parts_query);
+    }
+    mysqli_close($dbconnection);
 }
 }
 else {

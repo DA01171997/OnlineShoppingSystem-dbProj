@@ -27,9 +27,16 @@ if(isset($_SESSION['success'])) {
 </div>
 <div class="container">
  <div class="jumbotron">
-  <form method="post" action="/OnlineShoppingSystem/logout.php">
+  <form method="post" action="/OnlineShoppingSystem/logout.php"style="width: 70%;
+    margin: 0px auto;
+    padding: 20px;
+    border: 1px solid #B0C4DE;
+    background: #f5f5f5;
+    border-radius: 0px 0px 10px 10px;">
    <?php echo "<h2 align='center'> Logout $name?</h2>"; ?>
-  <button type="submit" class="btn btn-outline-warning btn-lg btn-block" name="logout_user">Logout</button>
+  <button type="submit" class="btn btn-outline-success btn-lg btn-block" name="logout_checkout" href="/OnlineShoppingSystem/viewcart.php">CheckOut</button>
+  <button type="submit" class="btn btn-outline-warning btn-lg btn-block" name="logout_user">Save Cart And Logout</button>
+  <button type="submit" class="btn btn-outline-danger btn-lg btn-block" name="logout_empty">Empty Cart And Logout</button>
     <?php // &nbsp = spaces ?>
   </form>
   </div>
@@ -37,7 +44,21 @@ if(isset($_SESSION['success'])) {
 
 </body>
 </html>
-<?php 
+<?php
+if (isset($_POST['logout_empty'])){
+  $cno="";
+  if(isset($_SESSION['cno'])){
+    $cno=$_SESSION['cno'];
+  }
+  $dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname); 
+  $parts_query= "DELETE FROM cart WHERE cno='$cno'";
+  mysqli_query($dbconnection, $parts_query);
+  mysqli_close($dbconnection);
+  $_SESSION=array();
+  $_POST = array();
+  session_destroy();
+  echo"<script>location.href='/OnlineShoppingSystem/WebsiteLogin.php'</script>";
+} 
 }
 else {
 echo"<script>location.href='/OnlineShoppingSystem/WebsiteLogin.php'</script>";
