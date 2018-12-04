@@ -34,7 +34,7 @@ if(isset($_SESSION['success'])) {
         <a class="p-2 " href="/OnlineShoppingSystem/index.php">Features</a> 
         <a class="p-2 " href="#">Check Order Status</a> 
         <a class="p-2 " href="#">Check Out</a> 
-        <a class="p-2 " href="#">View/Edit Cart</a> 
+        <a class="p-2 " href="/OnlineShoppingSystem/viewcart.php">View/Edit Cart</a> 
         <?php
          echo "<a class='p-2' href='/OnlineShoppingSystem/updateuser.php'>$name</a>";
         ?>
@@ -146,8 +146,19 @@ if(isset($_POST['inputarray'])){
 	{
         $index = $arrayIndex[$counter];
         $qty= $inputarray[$arrayIndex[$counter]];
-        $parts_query= "INSERT INTO cart (cno, pno, qty) VALUES ('$cno','$index','$qty')"; 
+        $parts_query= "SELECT qoh from parts where pno=$index"; 
         $result=mysqli_query($dbconnection, $parts_query);
+        $movieAvailQty = $assoarray["qoh"];
+        if (($movieAvailQty - $qty) <0){
+            array_push($errors, "Not Enough Available QTY for movie# $index");
+        }
+        if($qty<0){
+            array_push($errors, "Cannot have negative QtY for movie# $index");
+        }
+        if (count($errors)==0 && $qty>0){
+            $parts_query= "INSERT INTO cart (cno, pno, qty) VALUES ('$cno','$index','$qty')"; 
+            $result=mysqli_query($dbconnection, $parts_query);
+        }
     }
     mysqli_close($dbconnection);
     //var_dump($_SESSION['movieQty']);

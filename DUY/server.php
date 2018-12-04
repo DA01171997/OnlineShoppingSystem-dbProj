@@ -250,5 +250,14 @@ if(isset($_POST['search'])){
     }
    echo"<script>location.href='/OnlineShoppingSystem/search.php'</script>";
 }
+
+if (isset($_POST['cart'])){
+    $_SESSION['cart']=$_POST['cart'];
+    print("isset");
+   echo"<script>location.href='/OnlineShoppingSystem/viewcart.php'</script>";  
+}
+if (isset($_POST['modifycart'])){
+    print(" modify isset");
+}
 mysqli_close($dbconnection);
 ?>

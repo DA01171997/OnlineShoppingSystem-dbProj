@@ -34,7 +34,7 @@ if(isset($_SESSION['success'])) {
         <a class="p-2 " href="/OnlineShoppingSystem/index.php">Features</a> 
         <a class="p-2 " href="#">Check Order Status</a> 
         <a class="p-2 " href="#">Check Out</a> 
-        <a class="p-2 " href="#">View/Edit Cart</a> 
+        <a class="p-2 " href="/OnlineShoppingSystem/viewcart.php"">View/Edit Cart</a> 
         <?php
          echo "<a class='p-2' href='/OnlineShoppingSystem/updateuser.php'>$name</a>";
         ?>
@@ -81,6 +81,7 @@ mysqli_close($dbconnection);
  ?>
 
 <?php echo "<form method ='post' id='cart' action='/OnlineShoppingSystem/index.php' style=' width: 90%; border: 1px solid #B0C4DE; border-radius: 0px 0px 10px 10px; background: #f5f5f5; margin: 0px auto; padding: 20px;'>";?>
+<?php include('errors.php'); ?>
  <table class="table table-bordered">
   <thead>
     <tr>
@@ -143,11 +144,22 @@ if(isset($_POST['inputarray'])){
 	{
         $index = $arrayIndex[$counter];
         $qty= $inputarray[$arrayIndex[$counter]];
-        $parts_query= "INSERT INTO cart (cno, pno, qty) VALUES ('$cno','$index','$qty')"; 
+        $parts_query= "SELECT qoh from parts where pno=$index"; 
         $result=mysqli_query($dbconnection, $parts_query);
+        $movieAvailQty = $assoarray["qoh"];
+        if (($movieAvailQty - $qty) <0){
+            array_push($errors, "Not Enough Available QTY for movie# $index");
+        }
+        if($qty<0){
+            array_push($errors, "Cannot have negative QtY for movie# $index");
+        }
+        if (count($errors)==0 && $qty>0){
+            $parts_query= "INSERT INTO cart (cno, pno, qty) VALUES ('$cno','$index','$qty')"; 
+            $result=mysqli_query($dbconnection, $parts_query);
+        }
+
     }
     mysqli_close($dbconnection);
-    //var_dump($_SESSION['movieQty']);
 }
 }
 else {

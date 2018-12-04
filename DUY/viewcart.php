@@ -6,7 +6,7 @@ if (isset($_POST['logout_user'])){
 }
 $name="User";
 $cno="cno";
-$arrayIndex=array();
+$modifyarrayIndex=array();
 if(isset($_SESSION['success'])) {
     if(isset($_SESSION['cname'])){
         $name=$_SESSION['cname'];
@@ -34,12 +34,12 @@ if(isset($_SESSION['success'])) {
         <a class="p-2 " href="/OnlineShoppingSystem/index.php">Features</a> 
         <a class="p-2 " href="#">Check Order Status</a> 
         <a class="p-2 " href="#">Check Out</a> 
-        <a class="p-2 " href="#">View/Edit Cart</a> 
+        <a class="p-2 " href="/OnlineShoppingSystem/viewcart.php">View/Edit Cart</a> 
         <?php
          echo "<a class='p-2' href='/OnlineShoppingSystem/updateuser.php'>$name</a>";
         ?>
       </nav>
-      <form method ="post" class ="form-control" id="search" action="/OnlineShoppingSystem/index.php"style ="
+      <form method ="post" class ="form-control" id="search" action="/OnlineShoppingSystem/search.php"style ="
             width: 275px;
             height: 40px;
             padding: 0px;
@@ -48,10 +48,10 @@ if(isset($_SESSION['success'])) {
             border-radius: 5px;">
             <input class="form-group" type="text" placeholder="search" name="search" formmethod="post" >
             <?php //<a class="btn btn-outline-primary mt-md-0 " href="/OnlineShoppingSystem/logout.php" name="logout">Logout</a> ?>
-            <button class="btn btn-outline-success" form="search" type="submit" formaction="/OnlineShoppingSystem/index.php">Search</button>     
+            <button class="btn btn-outline-success" form="search" type="submit" formaction="/OnlineShoppingSystem/search.php">Search</button>     
      </form>
         
-     <form method ="post" class ="form-control" id="logout" action="/OnlineShoppingSystem/index.php"style ="
+     <form method ="post" class ="form-control" id="logout" action="/OnlineShoppingSystem/search.php"style ="
             width: 75px;
             height: 40px;
             padding: 0px;
@@ -63,90 +63,104 @@ if(isset($_SESSION['success'])) {
        
     </div>
 <?php
-$dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname); 
-$parts_query= "SELECT cartno, cno, pno, qty FROM cart WHERE cno='$cno'";
+if(isset($_SESSION['cart'])){
+$dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+$parts_query= "SELECT c.cartno, c.cno, c.pno, c.qty , p.pname, p.price FROM parts as p, cart as c WHERE cno='$cno' and c.pno = p.pno";
 $result=mysqli_query($dbconnection, $parts_query);
 if (!$result) {
     die("Database query failed.");
  }
-$num=mysqli_num_rows($result);  
-mysqli_close($dbconnection);  
+$num=mysqli_num_rows($result);   
 ?>
 
 <div class="container">
  <div class="jumbotron" background= "#f5f5f5">
  <?php 
  echo "<h1 align='center'>Welcome $name
- <p>Here are our movies</p></h1>"; 
+ <p>Here are movies in your cart</p></h1>"; 
  ?>
 
-<?php echo "<form method ='post' id='cart' action='/OnlineShoppingSystem/index.php' style=' width: 90%; border: 1px solid #B0C4DE; border-radius: 0px 0px 10px 10px; background: #f5f5f5; margin: 0px auto; padding: 20px;'>";?>
+<?php echo "<form method ='post' id='modifycart' action='/OnlineShoppingSystem/viewcart.php' style=' width: 100%; border: 1px solid #B0C4DE; border-radius: 0px 0px 10px 10px; background: #f5f5f5; margin: 0px auto; padding: 20px;'>";?>
+<?php include('errors.php'); ?>
  <table class="table table-bordered">
   <thead>
     <tr>
-      <th scope="col">Cart # </th>
-      <th scope="col">Customer #</th>
-      <th scope="col">P number</th>
+      <th scope="col">Cart# </th>
+      <th scope="col">Movie# </th>
+      <th scope="col">Movie Name </th>
+      <th scope="col">$Price</th>
       <th scope="col">QTY</th>
+      <th scope="col">$Total</th>
     </tr>
   </thead>
   <tbody>
   <?php
     $i=0;
-    $arrayIndex=array();
+    $totalprice=0;
     while ($i < $num) {
     $assoarray = mysqli_fetch_assoc($result);
     $movieNum = $assoarray["pno"];
     $movieName = $assoarray["pname"];
     $moviePrice = $assoarray["price"];
-    $movieAvailQty = $assoarray["qoh"];
-    $movieWantQty   = $assoarray["olevel"];
-    $arrayIndex[$i] = $movieNum;
-    $inputarray[$movieNum]=0;
+    $movieQty = $assoarray["qty"];
+    $cartnum   = $assoarray["cartno"];
+    $modifyarrayIndex[$i] = $movieNum;
+    $totalcurrent=0;
+    $totalcurrent=($moviePrice*$movieQty);
+    $totalprice+=$totalcurrent;
     ?>
     <?php echo "<tr>"; ?>
     
-    <?php echo  "<th scope='row'>$movieNum</th>"; ?>
+    <?php echo  "<th scope='row'>$cartnum</th>"; ?>
+    <?php echo  "<td>$movieNum</td>"; ?>
      <?php echo  "<td>$movieName</td>"; ?>
      <?php echo  "<td>$moviePrice</td>"; ?>
-     <?php echo  "<td>$movieAvailQty</td>"; ?>
      <?php echo "<td>"; ?>
 
      <?php echo "<div class='form-group' style='width:40%;'>"; ?>    
-     <?php echo "<input type='number' class='form-control'  form='cart' placeholder='0' name='inputarray[$movieNum]'>"; ?>
+     <?php echo "<input type='number' class='form-control'  form='modifycart' placeholder='$movieQty' name='modifyinputarray[$movieNum]'>"; ?>
      
      <?php echo "</div>"; ?>
-
-     <?php echo "</td>"; ?>  
+     <?php echo "</td>"; ?> 
+     <?php echo  "<td>$totalcurrent</td>"; ?>  
      <?php echo "</tr> "; ?>
      <?php
     $i++;    
     }
     ?>
+    <tr>
+      <td colspan="5"> </td>
+      <?php echo  "<td colspan='1'>$totalprice</td>"; ?> 
+    </tr>
   </tbody>
 </table>
-<?php echo "<button type='submit' form='cart' name='cart' class='btn btn-xs btn-outline-primary '>AddCart</button>";?>
+<?php echo "<button type='submit' form='modifycart' name='modifycart' class='btn btn-xs btn-outline-primary '>Modify Cart</button>";?>
 <?php echo "</form>"; ?>
   </div>
 </div>
 </body>
 </html>
 <?php
-$inputarray = array();
-if(isset($_POST['inputarray'])){
-    $inputarray = $_POST['inputarray'];    
-    $_SESSION['movieQty'] = $_POST['inputarray'];
-    $_SESSION['movieIndex'] = $arrayIndex;
+}
+$modifyinputarray = array();
+if(isset($_POST['modifyinputarray'])){
+    
+    $modifyinputarray = $_POST['modifyinputarray'];    
+    $_SESSION['modifymovieQty'] = $_POST['modifyinputarray'];
+    $_SESSION['modifymovieIndex'] = $modifyarrayIndex;
     $dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
-    for($counter = 0; $counter < sizeof($arrayIndex); $counter++)
-	{
+    for($counter = 0; $counter < sizeof($modifyarrayIndex); $counter++)
+	{/*
         $index = $arrayIndex[$counter];
-        $qty= $inputarray[$arrayIndex[$counter]];
+        $qty= $modifyinputarray[$arrayIndex[$counter]];
         $parts_query= "INSERT INTO cart (cno, pno, qty) VALUES ('$cno','$index','$qty')"; 
         $result=mysqli_query($dbconnection, $parts_query);
+        */
     }
     mysqli_close($dbconnection);
-    //var_dump($_SESSION['movieQty']);
+    //
+    
+    var_dump($_SESSION['modifymovieQty']);
 }
 }
 else {
