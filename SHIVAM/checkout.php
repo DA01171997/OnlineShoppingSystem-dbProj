@@ -1,3 +1,37 @@
+<?php
+
+
+  include 'config.php'; 
+  if(isset($_SESSION['email']))
+  {
+    $email = $_SESSION['email'];
+
+  }
+  else
+  {
+      $email = "no email found";
+  }
+
+  $sql_test = "SELECT * from customers where email = '$email'";
+  if($conn->query($sql_test))
+  {
+      echo "RECORD SUCCESSFULLY found";
+  }
+  else
+  {
+      echo "Error " . $sql_test . "<br>" . $conn->error;
+  }
+  $arrayIndex = array();
+  $result=mysqli_query($conn, $sql_test);
+  $row = $result->fetch_assoc();
+  $name = $row['cname'];
+  $cno = $row['cno'];
+  
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,7 +83,34 @@ html,body {
         </div>
 
         <div class ="col-10 col-sm-10 col-md-10 col-lg-8 col-xl-8"  id = "column1">
+                 <?php
+                    $sql2 = "SELECT * FROM cart";
+                    if($conn->query($sql2))
+                    {
+                        echo "RECORD SUCCESSFULLY found";
+                    }
+                    else
+                    {
+                        echo "Error " . $sql2 . "<br>" . $conn->error;
+                    }
+                    $result=mysqli_query($conn, $sql2);
+                    while($row = $result->fetch_assoc())
+                    {
+                        $sql3 = "INSERT into orders (cno)  values ('$cno')";
+                        if($conn->query($sql3))
+                        {
+                            echo "RECORD SUCCESSFULLY found";
+                        }
+                        else
+                        {
+                            echo "Error " . $sql3 . "<br>" . $conn->error;
+                        }
+                        
+                    }
+
                     
+                 
+                 ?>
         </div>
         
     </div>

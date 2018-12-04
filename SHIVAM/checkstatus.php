@@ -1,18 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Login Page</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-  <style>
-.jumbotron{
-    background-color:darkblue;
-    color:orange;
-}
-a {
-    color: white;
-}
 html,body {
     height:100%;
     
@@ -49,6 +34,25 @@ html,body {
         </div>
 
         <div class ="col-10 col-sm-10 col-md-10 col-lg-8 col-xl-8"  id = "column1">
+        <?php
+        $sql = "SELECT * from orders";
+        if($conn->query($sql2))
+                    {
+                        echo "RECORD SUCCESSFULLY found";
+                    }
+                    else
+                    {
+                        echo "Error " . $sql . "<br>" . $conn->error;
+                    }
+                    $result=mysqli_query($conn, $sql);
+                    while($row = $result->fetch_assoc())
+                    {
+                        echo $row['ono'];
+                        echo  $row['cno'];
+                        echo $row['shipped'];
+                        echo $row['recieved'];
+                    }
+        ?>
                     
         </div>
         

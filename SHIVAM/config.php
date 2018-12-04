@@ -12,4 +12,7 @@ if($conn->connect_error){
     #echo $password;
 }
 
+// deals with search 
+
+
 ?>
