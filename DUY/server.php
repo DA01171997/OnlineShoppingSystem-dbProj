@@ -85,6 +85,7 @@ if (isset($_POST['register'])){
                         VALUES ('$name', '$street', '$city', '$state', $zip, $phone, '$email', '$pswd1')";
         $result=mysqli_query($dbconnection, $insert_query);
         $_SESSION['email'] = $email;
+        $_SESSION['$name'] = $name;
         $_SESSION['success'] = "Logged in successfully";
         header('location: /OnlineShoppingSystem/index.php');
     }
@@ -104,13 +105,15 @@ if (isset($_POST['login_user'])){
         array_push($errors, "Password is required");
     }
     if (count($errors)==0){
-        $login_query= "SELECT * FROM customers WHERE email='$email' AND password='$pswd1'";
+        $login_query= "SELECT cname, email, password FROM customers WHERE email='$email' AND password='$pswd1'";
         $result=mysqli_query($dbconnection, $login_query);
         $assoarray = mysqli_fetch_assoc($result);
         $queryemail=$assoarray['email'];
+        $queryname=$assoarray['cname'];
         $querypswd1=$assoarray['password'];
         if (mysqli_num_rows($result) == 1) {
             $_SESSION['email'] = $email;
+            $_SESSION['name'] = $queryname;
             $_SESSION['success'] = "Logged in successfully";
             header('location: /OnlineShoppingSystem/index.php');
         }
@@ -119,5 +122,147 @@ if (isset($_POST['login_user'])){
         }
     }
 }
-    mysqli_close($dbconnection);
+//check if logout page is pressed
+if (isset($_POST['logout'])){
+    echo"<script>location.href='/OnlineShoppingSystem/logout.php'</script>";
+}
+//update session data
+if(isset($_SESSION['success']) || isset($_SESSION['updatedinfo'])){
+    $email = $_SESSION['email'];
+    $login_query= "SELECT cno, cname, street, city, state, zip, phone, password FROM customers WHERE email='$email'";
+        $result=mysqli_query($dbconnection, $login_query);
+        $assoarray = mysqli_fetch_assoc($result);
+        $_SESSION['cno']=$assoarray['cno'];
+        $_SESSION['cname']=$assoarray['cname'];
+        $_SESSION['street']=$assoarray['street'];
+        $_SESSION['city']=$assoarray['city'];
+        $_SESSION['state']=$assoarray['state'];
+        $_SESSION['zip']=$assoarray['zip'];
+        $_SESSION['phone']=$assoarray['phone'];
+        $_SESSION['password']=$assoarray['password'];
+}
+//check for user update
+if (isset($_POST['update'])){
+    $email = $_SESSION['email'];
+    $cno=$_SESSION['cno'];
+    $updatename = $_SESSION['cname'];
+    $updatestreet =$_SESSION['street'];
+    $updatecity =$_SESSION['city'];
+    $updatestate =$_SESSION['state'];
+    $updatezip =$_SESSION['zip'];
+    $updatephone = $_SESSION['phone'];
+    $updatepswd1 = $_SESSION['password'];
+    $updatepswd2 = $_SESSION['password'];
+    if (isset($_POST['updatename']) && !empty($_POST['updatename'])) {
+        $updatename = $_POST['updatename'];
+    }
+    if (isset($_POST['updatestreet'])&& !empty($_POST['updatestreet'])) {
+        $updatestreet =$_POST['updatestreet'];
+    }
+    if (isset($_POST['updatecity'])&& !empty($_POST['updatecity'])) {
+        $updatecity =$_POST['updatecity'];
+    }
+    if (isset($_POST['updatestate'])&& !empty($_POST['updatestate'])) {
+        $updatestate =$_POST['updatestate'];
+    }
+    if (isset($_POST['updatezip']) && !empty($_POST['updatezip'])) {
+        $updatezip =$_POST['updatezip'];
+    }
+    if (isset($_POST['updatephone']) && !empty($_POST['updatephone'])) {
+        $updatephone =$_POST['updatephone'];
+    }
+    if (isset($_POST['updatepswd1']) && !empty($_POST['updatepswd1'])) {
+        $updatepswd1 = $_POST['updatepswd1'];
+    }
+    if (isset($_POST['updatepswd2']) && !empty($_POST['updatepswd2'])){
+        $updatepswd2 = $_POST['updatepswd2'];
+    }
+    if(isset($_POST['updatepswd1'])&&isset($_POST['updatepswd2']) && !empty($_POST['updatepswd1']) && empty($_POST['updatepswd2'])){
+        array_push($errors, "Confirm password is required");
+    }
+    if(isset($_POST['updatepswd2'])&&isset($_POST['updatepswd1']) && !empty($_POST['updatepswd2']) && empty($_POST['updatepswd1'])){
+        array_push($errors, "Enter password is required");
+    }
+    if($updatepswd1!=$updatepswd2){
+        array_push($errors, "Update passwords do not match");
+    }
+    if (count($errors)==0){
+        if($_SESSION['cname']!=$updatename){
+            $update_name= "UPDATE customers SET cname='$updatename' WHERE cno='$cno' AND email='$email'";
+            $result=mysqli_query($dbconnection, $update_name);
+            $_SESSION['updatedinfo'] = "Update in successfully";
+            print("update name");
+        }
+        if($_SESSION['street']!=$updatestreet){
+            $update_street= "UPDATE customers SET street='$updatestreet' WHERE cno='$cno' AND email='$email'";
+            $result=mysqli_query($dbconnection, $update_street);
+            $_SESSION['updatedinfo'] = "Update in successfully";
+            print("update street");
+        }
+        if($_SESSION['city']!=$updatecity){
+            $update_city= "UPDATE customers SET city='$updatecity' WHERE cno='$cno' AND email='$email'";
+            $result=mysqli_query($dbconnection, $update_city);
+            $_SESSION['updatedinfo'] = "Update in successfully";
+            print("update city");
+        }
+        if($_SESSION['state']!=$updatestate){
+            $update_state= "UPDATE customers SET state='$updatestate' WHERE cno='$cno' AND email='$email'";
+            $result=mysqli_query($dbconnection, $update_state);
+            $_SESSION['updatedinfo'] = "Update in successfully";
+            print("update state");
+        }
+        if($_SESSION['zip']!=$updatezip){
+            $update_zip= "UPDATE customers SET zip='$updatezip' WHERE cno='$cno' AND email='$email'";
+            $result=mysqli_query($dbconnection, $update_zip);
+            $_SESSION['updatedinfo'] = "Update in successfully";
+            print("update zip");
+        }
+        if($_SESSION['phone']!=$updatephone){
+            $update_phone= "UPDATE customers SET phone='$updatephone' WHERE cno='$cno' AND email='$email'";
+            $result=mysqli_query($dbconnection, $update_phone);
+            $_SESSION['updatedinfo'] = "Update in successfully";
+            print("update phone");
+
+        }
+        if($_SESSION['password']!=$updatepswd1){
+            $update_password= "UPDATE customers SET password='$updatepswd1' WHERE cno='$cno' AND email='$email'";
+            $result=mysqli_query($dbconnection, $update_password);
+            $_SESSION['updatedinfo'] = "Update in successfully";
+            print("update password");
+        }
+        echo"<script>location.href='/OnlineShoppingSystem/updateuser.php'</script>";
+    }
+}
+//if search
+if(isset($_POST['search'])){
+    $_SESSION['search']=$_POST['search'];
+    if(isset($_POST['inputarray'])){
+        $_SESSION['movieQty'] = $_POST['inputarray'];
+    }
+    if (count($errors)==0){
+        echo"<script>location.href='/OnlineShoppingSystem/search.php'</script>";
+    }     
+}
+
+if (isset($_POST['cart'])){
+    $_SESSION['cart']=$_POST['cart'];
+    print("isset");
+    if (count($errors)==0){
+        echo"<script>location.href='/OnlineShoppingSystem/viewcart.php'</script>"; 
+    }     
+}
+if (isset($_POST['modifycart'])){
+    if (count($errors)==0){
+        echo"<script>location.href='/OnlineShoppingSystem/viewcart.php'</script>";
+    }     
+}
+if(isset($_POST['checkout'])){
+    if (count($errors)==0){
+        echo"<script>location.href='/OnlineShoppingSystem/checkorder.php'</script>";
+    }     
+}
+if(isset($_POST['logout_checkout'])){
+    echo"<script>location.href='/OnlineShoppingSystem/viewcart.php'</script>";
+}
+mysqli_close($dbconnection);
 ?>
