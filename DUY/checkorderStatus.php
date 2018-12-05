@@ -64,17 +64,14 @@ if(isset($_SESSION['success'])) {
     </div>
 
 <?php
-
 $dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
-$parts_query= "SELECT o.ono, o.received, o.recievedtime, o.shipped FROM orders as o, odetails as od WHERE o.ono = od.ono AND o.cno='$cno'";
+$parts_query= "SELECT p.pno, p.pname, p.price, od.qty FROM orders as o, parts as p, odetails as od 
+WHERE o.cno = '$cno' AND o.ono = '$ono' AND o.ono = od.ono AND p.pno = od.pno";
 $result=mysqli_query($dbconnection, $parts_query);
 $num=mysqli_num_rows($result);   
 ?>
 <div class="container">
-<?php 
- echo "<h1 align='center'>Welcome $name
- <p>Here Orders</p></h1>";
- ?> 
+<?php echo "<h1 align='center'>Welcome $name<p>Your Invoice Order# $ono</p></h1>"; ?> 
  <div class="jumbotron" style="
     margin: 0px auto;
     padding: 20px;
@@ -86,43 +83,61 @@ $num=mysqli_num_rows($result);
  <table class="table table-bordered">
  <thead>
    <tr>
-     <th scope="col">Order#</th>
-     <th scope="col">ReceivedDate</th>
-     <th scope="col">ReceivedDate</th>
-     <th scope="col">ShippedDate</th>
+     <th scope="col">MOVIE#</th>
+     <th scope="col">Movie</th>
+     <th scope="col">Price</th>
+     <th scope="col">QTY</th>
+     <th scope="col">$Total</th>
    </tr>
  </thead>
  <tbody>
  <?php
     $i=0;
+    $totalprice=0;
     while ($i < $num) {
     $assoarray = mysqli_fetch_assoc($result);
-    $ono = $assoarray["ono"];
-    $recvDate = $assoarray["received"];
-    $recvTime = $assoarray["recievedtime"];
-    if (empty($assoarray["shipped"])){
-        $shipDate = "Unknown";
-    }
-    else {
-        $shipDate = $assoarray["shipped"];
-    }
+    $movienum=$assoarray['pno'];
+    $moviename=$assoarray['pname'];
+    $movieprice=$assoarray['price'];
+    $movieQTY=$assoarray['qty'];
+    $totalcurrent=0;
+    $totalcurrent=($movieprice*$movieQTY);
+    $totalprice+=$totalcurrent;
     ?>
     
     <?php echo "<tr>"; ?>   
-
-    <td>
-    <?php echo "<a class='text' href='/OnlineShoppingSystem/checkorderStatus.php/?ono=$ono'>$ono<a>"; ?>   
-    </td>
-     <?php echo  "<td>$recvDate</td>"; ?>
-     <?php echo  "<td>$recvTime</td>"; ?>
-     <?php echo  "<td>$shipDate</td>";?>
+     <?php echo  "<td>$movienum</td>"; ?>
+     <?php echo  "<td>$moviename</td>"; ?>
+     <?php echo  "<td>$movieprice</td>";?>
+     <?php echo  "<td>$movieQTY</td>";?>
+     <?php echo  "<td>$totalcurrent</td>";?>
     <?php echo "</tr> ";?>
     <?php
     $i++;    
     }
     ?>
+    <tr>
+      <td colspan="4"> </td>
+      <?php echo  "<td colspan='1'>$totalprice</td>"; ?> 
+    </tr>
  </tbody>
  </table>
+ <?php 
+$dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+$parts_query= "select street, city, state, zip, phone from customers where cno='$cno'";
+$result=mysqli_query($dbconnection, $parts_query);
+$num=mysqli_num_rows($result); 
+$assoarray = mysqli_fetch_assoc($result);
+$street=$assoarray['street'];
+$city=$assoarray['city'];
+$state=$assoarray['state'];
+$zip=$assoarray['zip'];
+$phone=$assoarray['phone'];
+?>
+<div>
+<p> <h4>Shipping Address: </h4><?php echo"$street $city, $state $zip";?></p>
+<p> <h4>Phone: </h4><?php echo"$phone";?></p>
+</div>
   </div>
 </div>
 </body>

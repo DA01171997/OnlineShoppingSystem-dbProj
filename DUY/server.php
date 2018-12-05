@@ -258,7 +258,7 @@ if (isset($_POST['modifycart'])){
 }
 if(isset($_POST['checkout'])){
     if (count($errors)==0){
-        echo"<script>location.href='/OnlineShoppingSystem/viewcart.php'</script>";
+        echo"<script>location.href='/OnlineShoppingSystem/checkorder.php'</script>";
     }     
 }
 if(isset($_POST['logout_checkout'])){

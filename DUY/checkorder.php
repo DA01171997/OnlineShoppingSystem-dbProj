@@ -65,7 +65,7 @@ if(isset($_SESSION['success'])) {
 <?php
 
 $dbconnection = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
-$parts_query= "SELECT o.ono, o.received, o.recievedtime, o.shipped FROM orders as o, odetails as od WHERE o.ono = od.ono AND o.cno='$cno'";
+$parts_query= "SELECT DISTINCT o.ono, o.received, o.recievedtime, o.shipped FROM orders as o, odetails as od WHERE o.ono = od.ono AND o.cno='$cno'";
 $result=mysqli_query($dbconnection, $parts_query);
 $num=mysqli_num_rows($result);   
 ?>
